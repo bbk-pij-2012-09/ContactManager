@@ -1,41 +1,29 @@
-/**
- * 
- */
-//import java.utils.ArrayList;
+import java.util.List;
+import java.util.ArrayList;
+
 public class ContactImpl implements Contact {
-	//private int id;
-	//private String name;
-	//private ArrayList<String> Notes;
+	private int id;
+	private String name;
+	private ArrayList<String> notes;
 	
-	/**
-	 * 
-	 */
     @Override
 	public int getId() {
-    	return 0; //TO BE REVISED
+    	return id;
     }
 
-    /**
-     * 
-     */
     @Override
     public String getName() {
-    	return null; //TO BE REVISED
+    	return name;
     }
 
-    /**
-     * 
-     */
     @Override
     public String getNotes() {
-    	return null; //TO BE REVISED
+    	for (String note: notes)
+    		return note;
     }
 
-    /**
-     * 
-     */
     @Override
     public void addNotes(String note) {
-    	//TO BE REVISED
+    	notes.add(note);
     }
 }
