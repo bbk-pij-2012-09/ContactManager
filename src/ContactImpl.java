@@ -1,29 +1,31 @@
-import java.util.List;
-import java.util.ArrayList;
-
 public class ContactImpl implements Contact {
 	private int id;
 	private String name;
-	private ArrayList<String> notes;
+	private String notes;
+	
+	public ContactImpl(int id, String name, String notes) {
+		this.id = id;
+		this.name = name;
+		this.notes = notes;
+	}
 	
     @Override
 	public int getId() {
-    	return id;
+    		return id;
     }
 
     @Override
     public String getName() {
-    	return name;
+    		return name;
     }
 
     @Override
     public String getNotes() {
-    	for (String note: notes)
-    		return note;
+    		return notes;
     }
 
     @Override
     public void addNotes(String note) {
-    	notes.add(note);
+    		this.notes += " " + note; // look at implementing as an ArrayList later
     }
 }
