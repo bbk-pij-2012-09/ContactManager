@@ -1,6 +1,38 @@
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 
+import org.junit.Test;
+
+public class ContactTest {
+
+    @Test
+	public void testId() {
+    	ContactImpl contact = new ContactImpl(1, "Mike Jones", "Managing Director");
+        assertNotNull(contact.getId());
+        //insert a test to ensure that the ID passed in is unique
+        //read the list of current contacts and compare it against the id passed in
+		//assertNotEquals(????,contact.getId()); ///TEST FOR UNIQUE
+	}
+
+	@Test
+	public void testName() {
+    	ContactImpl contact = new ContactImpl(1, "Mary Smith", "Vice President");
+        assertNotNull(contact.getName());
+	}
+
+	@Test
+	public void testNotes() {
+    	ContactImpl contact = new ContactImpl(1, "Stephen Falken", "Professor");
+    	assertNotNull(contact.getNotes());
+        //Test for multiple notes later
+     	//contact.addNotes("another note");
+       	//assertNotNull(contact.getNotes());
+	}
+}
+/*
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -40,3 +72,4 @@ public class ContactTest {
     	);
     }
 }
+*/
