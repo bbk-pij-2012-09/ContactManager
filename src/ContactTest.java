@@ -1,5 +1,4 @@
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
 
 import org.junit.Test;
 
