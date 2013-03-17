@@ -7,18 +7,27 @@ import java.util.HashSet;
  *
  *	Meetings have unique IDs, scheduled date and a list of participating contacts
  */
-public class MeetingImpl implements Meeting {
+public abstract class MeetingImpl implements Meeting {
 
     private int id;
     private Set<Contact> contacts;
-    private Calendar calendar;
+    private Calendar date;
+    private static int uniqueId;
 
-    public MeetingImpl(int id, int year, int month, int day) {
-        this.id = id;
-        contacts = new HashSet<Contact>();
-        this.calendar = Calendar.getInstance();
-        calendar.set(year, month, day);
+    static {
+        uniqueId = 0;
     }
+
+    protected MeetingImpl(int id, Calendar date, Set<Contact> contacts){
+        this.id = id;
+        this.date = date;
+        this.contacts = contacts;
+    }
+
+    public MeetingImpl(Calendar date, Set<Contact> contacts){
+        this(++uniqueId, date, contacts);
+    }
+
 
     /**
      *	Return the details of people that attended the meeting.
@@ -41,7 +50,7 @@ public class MeetingImpl implements Meeting {
      */
     @Override
     public Calendar getDate() {
-		return calendar;
+		return date;
     }
 
     /**

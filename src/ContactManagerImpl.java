@@ -1,7 +1,4 @@
-import java.util.Calendar;
-import java.util.List;
-import java.util.Set;
-import java.util.HashSet;
+import java.util.*;
 
 /**
  *	A class to manage your contacts and meetings.
@@ -11,13 +8,14 @@ public class ContactManagerImpl implements ContactManager {
      *
      */
 
-	private int id;
+    private int contactId;
 	private Set<Contact> contacts;
-	//private List<Meetings> meeting;
+	private List<Meeting> meetings;
 	
 	public ContactManagerImpl() {
-		id = 0; // id whatever it was last time sort out persistence mechanism
+		contactId = 0; // id whatever it was last time sort out persistence mechanism
 		contacts = new HashSet<Contact>(); //for now will see if order matters ****************************************
+        meetings = new ArrayList<Meeting>();
 	}
 
     /**
@@ -30,8 +28,33 @@ public class ContactManagerImpl implements ContactManager {
      *	of if any contact is unknown / non-existent
      */
     @Override
-    public int addFutureMeeting(Set<Contact> contacts, Calendar date) {
-    	return 0; // TO BE REVISED
+    public int addFutureMeeting(Set<Contact> contacts, Calendar date) throws IllegalArgumentException {
+        Calendar currentDate = Calendar.getInstance();
+        if (date.before(currentDate)) {
+            throw new IllegalArgumentException("the meeting is set for a time in the past");
+        }   else if (!isExistingContacts(contacts)) {
+            throw new IllegalArgumentException("the contact is unknown /non-existent");
+        }
+        else {
+            MeetingImpl meeting = new FutureMeetingImpl(date, contacts);
+            meetings.add(meeting);
+            return meeting.getId();
+        }
+    }
+
+    /**
+     *	Checks if all contacts exist
+     *
+     *	@param contacts a list of contacts
+     *	@return the true if all contacts currently exist.
+     */
+    private boolean isExistingContacts(Set<Contact> contacts) {
+        for (Contact contact : contacts) {
+            if (!contacts.contains(contact)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -43,7 +66,7 @@ public class ContactManagerImpl implements ContactManager {
      */
     @Override
     public PastMeeting getPastMeeting(int id) {
-    	return null; // TO BE REVISED    	
+    	return null; // TO BE REVISED
     }
 
     /**
@@ -55,7 +78,7 @@ public class ContactManagerImpl implements ContactManager {
      */
     @Override
     public FutureMeeting getFutureMeeting(int id) {
-    	return null; // TO BE REVISED    	
+        return null; //meetings.get(id);
     }
 
     /**
@@ -82,7 +105,7 @@ public class ContactManagerImpl implements ContactManager {
      */
     @Override
     public List<Meeting> getFutureMeetingList(Contact contact) {
-    	return null; // TO BE REVISED    	
+    	return null; // TO BE REVISED
     }
 
     /**
@@ -98,7 +121,7 @@ public class ContactManagerImpl implements ContactManager {
      */
     @Override
     public List<Meeting> getFutureMeetingList(Calendar date) {
-    	return null; // TO BE REVISED       	
+        return null;//	meetings.get()    null; // TO BE REVISED
     }
 
     /**
@@ -113,7 +136,7 @@ public class ContactManagerImpl implements ContactManager {
      *	@throws IllegalArgumentException if the contact does not exist
      */
     @Override
-    public List<PastMeeting> getPastMeetingList(Contact  contact) {
+    public List<PastMeeting> getPastMeetingList(Contact contact) {
     	return null; // TO BE REVISED       	
     }
 
@@ -167,8 +190,8 @@ public class ContactManagerImpl implements ContactManager {
 			throw new NullPointerException("You tried to add a new contact however the notes are missing");
         }
         else {
-			id++;
-			ContactImpl contact = new ContactImpl(id, name, notes);
+			contactId++;
+			ContactImpl contact = new ContactImpl(contactId, name, notes);
 			contacts.add(contact);
 		}
     }

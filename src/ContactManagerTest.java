@@ -1,4 +1,9 @@
+import java.util.Calendar;
 import java.util.Set;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Ignore; //********************************************* REMOVE LATER
 import org.junit.Test;
@@ -51,5 +56,15 @@ public class ContactManagerTest {
         //The last line is supposed to throw a NullPointerException
         @SuppressWarnings("actual is unused")
         Set<Contact> actual = contactManager.getContacts((String) null);
+    }
+
+    @Test
+    public void testAddFutureMeetingWithContact() {
+        Calendar date = Calendar.getInstance();
+        date.set(2013, 12, 1);
+        ContactManagerImpl contactManager = new ContactManagerImpl();
+        contactManager.addNewContact("Steve Austin", "The Six Million Dollar Man");
+        MeetingImpl meeting = new FutureMeetingImpl(date, contactManager.getContacts(1));
+        assertNotNull(meeting);
     }
 }
