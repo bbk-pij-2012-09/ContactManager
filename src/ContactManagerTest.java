@@ -52,5 +52,4 @@ public class ContactManagerTest {
         @SuppressWarnings("actual is unused")
         Set<Contact> actual = contactManager.getContacts((String) null);
     }
-
 }

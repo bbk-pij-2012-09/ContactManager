@@ -3,8 +3,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
 
+/**
+ *	A class to manage your contacts and meetings.
+ */
 public class ContactManagerImpl implements ContactManager {
-	
+    /**
+     *
+     */
+
 	private int id;
 	private Set<Contact> contacts;
 	//private List<Meetings> meeting;
