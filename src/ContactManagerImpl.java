@@ -66,26 +66,28 @@ public class ContactManagerImpl implements ContactManager {
     */
     @Override
     public void addNewContact(String name, String notes) throws NullPointerException {
-		id++;
-		try {
-    			ContactImpl contact = new ContactImpl(id, name, notes);
-    			contacts.add(contact);
-    		}
-    		catch (NullPointerException exception) {
-    			if (name == null) {
-    				System.out.println("You attempted to add a new contact however name is missing");
-    			}
-    			else {
-    				System.out.println("You attempted to add a new contact however notes are missing");
-    			}
-    		}
+		if (name == null) 
+			throw new NullPointerException("You tried to add a new contact however the name is missing");
+		else if (notes == null)
+			throw new NullPointerException("You tried to add a new contact however the notes are missing");
+		else {
+			id++;
+			ContactImpl contact = new ContactImpl(id, name, notes);
+			contacts.add(contact);
+		}
     }
-
+    
     @Override
-    public Set<Contact> getContacts(int... ids) {
-    	return null; // TO BE REVISED       	    	
+    public Set<Contact> getContacts(int... ids) throws IllegalArgumentException {
+    	for (int id : ids) {
+    		if (!contacts.contains(id))
+    			throw new IllegalArgumentException("Not there!");
+    	}
+    	return null;
+	    	
     }
-
+  
+    
     @Override
     public Set<Contact> getContacts(String  name) {
     	return null; // TO BE REVISED       	    	
