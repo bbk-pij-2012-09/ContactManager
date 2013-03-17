@@ -1,11 +1,8 @@
 import java.util.Calendar;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
-import org.junit.Ignore; //********************************************* REMOVE LATER
 import org.junit.Test;
 
 
@@ -67,4 +64,5 @@ public class ContactManagerTest {
         MeetingImpl meeting = new FutureMeetingImpl(date, contactManager.getContacts(1));
         assertNotNull(meeting);
     }
+
 }

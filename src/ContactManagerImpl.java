@@ -4,14 +4,11 @@ import java.util.*;
  *	A class to manage your contacts and meetings.
  */
 public class ContactManagerImpl implements ContactManager {
-    /**
-     *
-     */
 
     private int contactId;
 	private Set<Contact> contacts;
 	private List<Meeting> meetings;
-	
+
 	public ContactManagerImpl() {
 		contactId = 0; // id whatever it was last time sort out persistence mechanism
 		contacts = new HashSet<Contact>(); //for now will see if order matters ****************************************
@@ -29,10 +26,10 @@ public class ContactManagerImpl implements ContactManager {
      */
     @Override
     public int addFutureMeeting(Set<Contact> contacts, Calendar date) throws IllegalArgumentException {
-        Calendar currentDate = Calendar.getInstance();
-        if (date.before(currentDate)) {
+        if (isInThePast(date)) {
             throw new IllegalArgumentException("the meeting is set for a time in the past");
-        }   else if (!isExistingContacts(contacts)) {
+        }
+        else if (!isExistingContacts(contacts)) {
             throw new IllegalArgumentException("the contact is unknown /non-existent");
         }
         else {
@@ -40,21 +37,6 @@ public class ContactManagerImpl implements ContactManager {
             meetings.add(meeting);
             return meeting.getId();
         }
-    }
-
-    /**
-     *	Checks if all contacts exist
-     *
-     *	@param contacts a list of contacts
-     *	@return the true if all contacts currently exist.
-     */
-    private boolean isExistingContacts(Set<Contact> contacts) {
-        for (Contact contact : contacts) {
-            if (!contacts.contains(contact)) {
-                return false;
-            }
-        }
-        return true;
     }
 
     /**
@@ -66,7 +48,17 @@ public class ContactManagerImpl implements ContactManager {
      */
     @Override
     public PastMeeting getPastMeeting(int id) {
-    	return null; // TO BE REVISED
+        for (Meeting meeting: meetings) {
+            if (meeting.getId() == id) {
+                if (!isInThePast(meeting.getDate())) {
+                    throw new IllegalArgumentException("A meeting with that ID happening in the future");
+                }
+                else {
+                    return (PastMeeting) meeting;
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -78,7 +70,17 @@ public class ContactManagerImpl implements ContactManager {
      */
     @Override
     public FutureMeeting getFutureMeeting(int id) {
-        return null; //meetings.get(id);
+        for (Meeting meeting: meetings) {
+            if (meeting.getId() == id) {
+                if (isInThePast(meeting.getDate())) {
+                    throw new IllegalArgumentException("A meeting with that ID happening in the past");
+                }
+                else {
+                    return (FutureMeeting) meeting;
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -89,7 +91,12 @@ public class ContactManagerImpl implements ContactManager {
      */
     @Override
     public Meeting getMeeting(int id) {
-    	return null; // TO BE REVISED  	
+        for (Meeting meeting: meetings) {
+            if (meeting.getId() == id) {
+                return meeting;
+            }
+        }
+    	return null;
     }
 
     /**
@@ -105,7 +112,17 @@ public class ContactManagerImpl implements ContactManager {
      */
     @Override
     public List<Meeting> getFutureMeetingList(Contact contact) {
-    	return null; // TO BE REVISED
+        TreeSet<Meeting> contactMeetings = new TreeSet<Meeting>();
+        for (Contact c : contacts) {
+            if (c == contact) {
+                for (Meeting meeting: meetings) {
+                    if (!isInThePast(meeting.getDate())) {
+                        contactMeetings.add(meeting);
+                    }
+                }
+            }
+        }
+        return (List<Meeting>)contactMeetings;
     }
 
     /**
@@ -152,7 +169,7 @@ public class ContactManagerImpl implements ContactManager {
      */
     @Override
     public void addNewPastMeeting(Set<Contact> contacts, Calendar date, String text) {
-    	// TO BE REVISED       	    	
+    	// TO BE REVISED
     }
 
     /**
@@ -213,7 +230,7 @@ public class ContactManagerImpl implements ContactManager {
                     result.add(contact);
                     break;
                 }
-            }
+           }
         }
         if (result.size() == ids.length) {
             return result;
@@ -255,5 +272,31 @@ public class ContactManagerImpl implements ContactManager {
     @Override
     public void flush() {
     	// TO BE REVISED       	    	
+    }
+
+    /**
+     *	Checks if all contacts exist
+     *
+     *	@param contacts a list of contacts
+     *	@return the true if all contacts currently exist.
+     */
+    private boolean isExistingContacts(Set<Contact> contacts) {
+        for (Contact contact : contacts) {
+            if (!contacts.contains(contact)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     *	Checks if meeting is in the past
+     *
+     *	@param date the date on which the meeting will take place
+     *	@return the true if all date is in the past.
+     */
+    private boolean isInThePast(Calendar date) {
+        Calendar currentDate = Calendar.getInstance();
+        return date.before(currentDate);
     }
 }

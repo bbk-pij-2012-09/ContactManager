@@ -4,8 +4,6 @@ import java.util.Calendar;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
 
-import com.sun.org.apache.xpath.internal.functions.FuncRound;
-import org.junit.Ignore; //********************************************* REMOVE LATER
 import org.junit.Test;
 
 public class MeetingTest {

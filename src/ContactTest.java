@@ -1,11 +1,3 @@
-//Test the INTERFACE ***
-//Test the INTERFACE ***
-//Test the INTERFACE ***
-//Test the INTERFACE ***
-//Test the INTERFACE ***
-
-
-
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
@@ -18,7 +10,6 @@ public class ContactTest {
         assertNotNull(contact.getId());
         //insert a test to ensure that the ID passed in is unique
         //read the list of current contacts and compare it against the id passed in
-		//assertNotEquals(????,contact.getId()); ///TEST FOR UNIQUE
 	}
 
 	@Test

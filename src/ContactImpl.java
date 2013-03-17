@@ -5,9 +5,6 @@
  *	not), and notes that the user may want to save about them.
  */
 public class ContactImpl implements Contact {
-    /**
-     *
-     */
 
 	private int id;
 	private String name;
