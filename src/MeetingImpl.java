@@ -17,16 +17,25 @@ public abstract class MeetingImpl implements Meeting {
         uniqueId = 0;
     }
 
-    protected MeetingImpl(int id, Calendar date, Set<Contact> contacts){
+    protected MeetingImpl(int id, Set<Contact> contacts, Calendar date){
         this.id = id;
         this.date = date;
         this.contacts = contacts;
     }
 
-    public MeetingImpl(Calendar date, Set<Contact> contacts){
-        this(++uniqueId, date, contacts);
+    public MeetingImpl(Set<Contact> contacts, Calendar date){
+        this(++uniqueId, contacts, date);
     }
 
+    /**
+     *	Returns the id of the meeting.
+     *
+     *	@return the id of the meeting.
+     */
+    @Override
+    public int getId() {
+        return id;
+    }
 
     /**
      *	Return the details of people that attended the meeting.
@@ -50,15 +59,5 @@ public abstract class MeetingImpl implements Meeting {
     @Override
     public Calendar getDate() {
 		return date;
-    }
-
-    /**
-     *	Returns the id of the meeting.
-     *
-     *	@return the id of the meeting.
-     */
-    @Override
-    public int getId() {
-        return id;
     }
 }

@@ -14,7 +14,7 @@ public class MeetingTest {
         contactManager.addNewContact("Steve Austin", "The Six Million Dollar Man");
         contactManager.addNewContact("Mikey Jikey", "Vice President");
         Calendar date = Calendar.getInstance();
-        MeetingImpl meeting = new FutureMeetingImpl(date, contactManager.getContacts(1, 2));
+        MeetingImpl meeting = new FutureMeetingImpl(contactManager.getContacts(1, 2), date);
         assertNotNull(meeting.getId());
         assertEquals(1, meeting.getId());
         //insert a test to ensure that the ID passed in is unique
@@ -28,7 +28,7 @@ public class MeetingTest {
         ContactManagerImpl contactManager = new ContactManagerImpl();
         contactManager.addNewContact("Steve Austin", "The Six Million Dollar Man");
         contactManager.addNewContact("Mikey Jikey", "Vice President");
-        MeetingImpl meeting = new FutureMeetingImpl(date, contactManager.getContacts(1, 2));
+        MeetingImpl meeting = new FutureMeetingImpl(contactManager.getContacts(1, 2), date);
         Calendar meetingDate = meeting.getDate();
         assertNotNull(meetingDate);
     }
@@ -40,7 +40,7 @@ public class MeetingTest {
         ContactManagerImpl contactManager = new ContactManagerImpl();
         contactManager.addNewContact("Steve Austin", "The Six Million Dollar Man");
         contactManager.addNewContact("Mikey Jikey", "Vice President");
-        MeetingImpl meeting = new FutureMeetingImpl(date, contactManager.getContacts(1, 2));
+        MeetingImpl meeting = new FutureMeetingImpl(contactManager.getContacts(1, 2), date);
         Calendar meetingDate = meeting.getDate();
         assertEquals(date.get(Calendar.DAY_OF_MONTH), meetingDate.get(Calendar.DAY_OF_MONTH));
         assertEquals(date.get(Calendar.MONTH), meetingDate.get(Calendar.MONTH));
@@ -53,7 +53,7 @@ public class MeetingTest {
         ContactManagerImpl contactManager = new ContactManagerImpl();
         contactManager.addNewContact("Steve Austin", "The Six Million Dollar Man");
         contactManager.addNewContact("Mikey Jikey", "Vice President");
-        MeetingImpl meeting = new FutureMeetingImpl(date, contactManager.getContacts(1, 2));
+        MeetingImpl meeting = new FutureMeetingImpl(contactManager.getContacts(1, 2), date);
         Set<Contact> contacts = meeting.getContacts();
         assertNotNull(contacts);
     }

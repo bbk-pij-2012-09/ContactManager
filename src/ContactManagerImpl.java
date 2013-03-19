@@ -15,6 +15,130 @@ public class ContactManagerImpl implements ContactManager {
         meetings = new ArrayList<Meeting>();
 	}
 
+
+
+
+
+
+
+
+
+
+
+
+    /**
+     *	Checks if all contacts exist
+     *
+     *	@param contacts a list of contacts
+     *	@return the true if all contacts currently exist.
+     */
+    private boolean isExistingContacts(Set<Contact> contacts) {
+        for (Contact contact : contacts) {
+            if (!contacts.contains(contact)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     *	Checks if meeting is in the past
+     *
+     *	@param date the date on which the meeting will take place
+     *	@return the true if all date is in the past.
+     */
+    private boolean isInThePast(Calendar date) {
+        Calendar currentDate = Calendar.getInstance();
+        return date.before(currentDate);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+    /**
+     *	Create a new contact with the specified name and notes.
+     *
+     *	@param name the name of the contact.
+     *	@param notes notes to be added about the contact.
+     *	@throws NullPointerException if the name or the notes are null
+     */
+    @Override
+    public void addNewContact(String name, String notes) throws NullPointerException {
+        if (name == null) {
+            throw new NullPointerException("You tried to add a new contact however the name is missing");
+        } else if (notes == null) {
+            throw new NullPointerException("You tried to add a new contact however notes are missing");
+        } else {
+            ContactImpl contact = new ContactImpl(++contactId, name, notes);
+            contacts.add(contact);
+        }
+    }
+
+    /**
+     *	Returns a list containing the contacts that correspond to the IDs.
+     *
+     *	@param ids an arbitrary number of contact IDs
+     *	@return a list containing the contacts that correspond to the IDs.
+     *	@throws IllegalArgumentException if any of the IDs does not correspond to a real contact
+     */
+    @Override
+    public Set<Contact> getContacts(int... ids) throws IllegalArgumentException {
+        Set<Contact> result = new HashSet<Contact>();
+        for (Integer id : ids) {
+            //Check if the id matches any of the contacts
+            for (Contact contact : contacts) {
+                if (contact.getId() == id) {
+                    result.add(contact);
+                    break;
+                }
+            }
+        }
+        if (result.size() == ids.length) {
+            return result;
+        } else {
+            throw new IllegalArgumentException("ID(s) do not correspond to a real contact");
+        }
+    }
+
+    /**
+     *	Returns a list with the contacts whose name contains that string.
+     *
+     *	@param name the string to search for
+     *	@return a list with the contacts whose name contains that string.
+     *	@throws NullPointerException if the parameter is null
+     */
+    @Override
+    public Set<Contact> getContacts(String name) throws NullPointerException {
+        Set<Contact> result = new HashSet<Contact>();
+        if (name == null) {
+            throw new NullPointerException("You tried to get a contact however the name is missing");
+        } else {
+            for (Contact contact : contacts) {
+                if (contact.getName() == name) {
+                    result.add(contact);
+                }
+            }
+        }
+        return result;
+    }
+
+
+
+
+
+
+
+
+
+
     /**
      *	Add a new meeting to be held in the future.
      *
@@ -28,37 +152,13 @@ public class ContactManagerImpl implements ContactManager {
     public int addFutureMeeting(Set<Contact> contacts, Calendar date) throws IllegalArgumentException {
         if (isInThePast(date)) {
             throw new IllegalArgumentException("the meeting is set for a time in the past");
-        }
-        else if (!isExistingContacts(contacts)) {
+        } else if (!(isExistingContacts(contacts))) {
             throw new IllegalArgumentException("the contact is unknown /non-existent");
-        }
-        else {
-            MeetingImpl meeting = new FutureMeetingImpl(date, contacts);
+        } else {
+            MeetingImpl meeting = new FutureMeetingImpl(contacts, date);
             meetings.add(meeting);
             return meeting.getId();
         }
-    }
-
-    /**
-     *	Returns the PAST meeting with the requested ID, or null if it there is none.
-     *
-     *	@param id the ID for the meeting
-     *	@return the meeting with the requested ID, or null if it there is none.
-     *	@throws IllegalArgumentException if there is a meeting with that ID happening in the future
-     */
-    @Override
-    public PastMeeting getPastMeeting(int id) {
-        for (Meeting meeting: meetings) {
-            if (meeting.getId() == id) {
-                if (!isInThePast(meeting.getDate())) {
-                    throw new IllegalArgumentException("A meeting with that ID happening in the future");
-                }
-                else {
-                    return (PastMeeting) meeting;
-                }
-            }
-        }
-        return null;
     }
 
     /**
@@ -74,29 +174,12 @@ public class ContactManagerImpl implements ContactManager {
             if (meeting.getId() == id) {
                 if (isInThePast(meeting.getDate())) {
                     throw new IllegalArgumentException("A meeting with that ID happening in the past");
-                }
-                else {
+                } else {
                     return (FutureMeeting) meeting;
                 }
             }
         }
         return null;
-    }
-
-    /**
-     *	Returns the meeting with the requested ID, or null if it there is none.
-     *
-     *	@param id the ID for the meeting
-     *	@return the meeting with the requested ID, or null if it there is none.
-     */
-    @Override
-    public Meeting getMeeting(int id) {
-        for (Meeting meeting: meetings) {
-            if (meeting.getId() == id) {
-                return meeting;
-            }
-        }
-    	return null;
     }
 
     /**
@@ -137,8 +220,80 @@ public class ContactManagerImpl implements ContactManager {
      *	@return the list of meetings
      */
     @Override
-    public List<Meeting> getFutureMeetingList(Calendar date) {
+    public List<Meeting> getFutureMeetingList(Calendar date) { // ***************RETURNS FUTURE AND PAST MEETINGS ********************
         return null;//	meetings.get()    null; // TO BE REVISED
+    }
+
+
+
+
+
+
+
+
+
+
+    /**
+     *	Returns the meeting with the requested ID, or null if it there is none.
+     *
+     *	@param id the ID for the meeting
+     *	@return the meeting with the requested ID, or null if it there is none.
+     */
+    @Override
+    public Meeting getMeeting(int id) {
+        for (Meeting meeting: meetings) {
+            if (meeting.getId() == id) {
+                return meeting;
+            }
+        }
+        return null;
+    }
+
+
+
+
+
+
+
+
+
+
+    /**
+     *	Create a new record for a meeting that took place in the past.
+     *
+     *	@param contacts a list of participants
+     *	@param date the date on which the meeting took place
+     *	@param  text messages  to be  added  about  the meeting.
+     *	@throws IllegalArgumentException if the list of contacts is
+     *	empty, or any of the contacts does not exist
+     *	@throws NullPointerException if any of the arguments is null
+     */
+    @Override
+    public void addNewPastMeeting(Set<Contact> contacts, Calendar date, String text) {
+        // TO BE REVISED
+    }
+
+
+
+    /**
+     *	Returns the PAST meeting with the requested ID, or null if it there is none.
+     *
+     *	@param id the ID for the meeting
+     *	@return the meeting with the requested ID, or null if it there is none.
+     *	@throws IllegalArgumentException if there is a meeting with that ID happening in the future
+     */
+    @Override
+    public PastMeeting getPastMeeting(int id) {
+        for (Meeting meeting: meetings) {
+            if (meeting.getId() == id) {
+                if (!isInThePast(meeting.getDate())) {
+                    throw new IllegalArgumentException("A meeting with that ID happening in the future");
+                } else {
+                    return (PastMeeting) meeting;
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -157,20 +312,14 @@ public class ContactManagerImpl implements ContactManager {
     	return null; // TO BE REVISED       	
     }
 
-    /**
-     *	Create a new record for a meeting that took place in the past.
-     *
-     *	@param contacts a list of participants
-     *	@param date the date on which the meeting took place
-     *	@param  text messages  to be  added  about  the meeting.
-     *	@throws IllegalArgumentException if the list of contacts is
-     *	empty, or any of the contacts does not exist
-     *	@throws NullPointerException if any of the arguments is null
-     */
-    @Override
-    public void addNewPastMeeting(Set<Contact> contacts, Calendar date, String text) {
-    	// TO BE REVISED
-    }
+
+
+
+
+
+
+
+
 
     /**
      *	Add notes to a meeting.
@@ -191,77 +340,15 @@ public class ContactManagerImpl implements ContactManager {
     	// TO BE REVISED       	   	    	
     }
 
-    /**
-     *	Create a new contact with the specified name and notes.
-     *
-     *	@param name the name of the contact.
-     *	@param notes notes to be added about the contact.
-     *	@throws NullPointerException if the name or the notes are null
-     */
-    @Override
-    public void addNewContact(String name, String notes) throws NullPointerException {
-		if (name == null) {
-			throw new NullPointerException("You tried to add a new contact however the name is missing");
-        }
-        else if (notes == null) {
-			throw new NullPointerException("You tried to add a new contact however the notes are missing");
-        }
-        else {
-			contactId++;
-			ContactImpl contact = new ContactImpl(contactId, name, notes);
-			contacts.add(contact);
-		}
-    }
 
-    /**
-     *	Returns a list containing the contacts that correspond to the IDs.
-     *
-     *	@param ids an arbitrary number of contact IDs
-     *	@return a list containing the contacts that correspond to the IDs.
-     *	@throws IllegalArgumentException if any of the IDs does not correspond to a real contact
-     */
-    @Override
-    public Set<Contact> getContacts(int... ids) throws IllegalArgumentException {
-        Set<Contact> result = new HashSet<Contact>();
-        for (Integer id : ids) {
-            //Check if the id matches any of the contacts
-            for (Contact contact : contacts) {
-                if (contact.getId() == id) {
-                    result.add(contact);
-                    break;
-                }
-           }
-        }
-        if (result.size() == ids.length) {
-            return result;
-        }
-        else {
-            throw new IllegalArgumentException("ID(s) do not correspond to a real contact");
-        }
-    }
 
-    /**
-     *	Returns a list with the contacts whose name contains that string.
-     *
-     *	@param name the string to search for
-     *	@return a list with the contacts whose name contains that string.
-     *	@throws NullPointerException if the parameter is null
-     */
-    @Override
-    public Set<Contact> getContacts(String name) throws NullPointerException {
-		Set<Contact> result = new HashSet<Contact>(); 
-    	if (name == null) {
-			throw new NullPointerException("You tried to get a contact however the name is missing");
-        }
-        else {
-		    for (Contact contact : contacts) {
-		        if (contact.getName() == name) {
-                    result.add(contact);
-                }
-		    }
-		}
-    	return result;
-	}
+
+
+
+
+
+
+
 
     /**
      *	Save all data to disk.
@@ -272,31 +359,5 @@ public class ContactManagerImpl implements ContactManager {
     @Override
     public void flush() {
     	// TO BE REVISED       	    	
-    }
-
-    /**
-     *	Checks if all contacts exist
-     *
-     *	@param contacts a list of contacts
-     *	@return the true if all contacts currently exist.
-     */
-    private boolean isExistingContacts(Set<Contact> contacts) {
-        for (Contact contact : contacts) {
-            if (!contacts.contains(contact)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
-     *	Checks if meeting is in the past
-     *
-     *	@param date the date on which the meeting will take place
-     *	@return the true if all date is in the past.
-     */
-    private boolean isInThePast(Calendar date) {
-        Calendar currentDate = Calendar.getInstance();
-        return date.before(currentDate);
     }
 }

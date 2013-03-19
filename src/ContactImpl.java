@@ -37,6 +37,16 @@ public class ContactImpl implements Contact {
     }
 
     /**
+     *	Add notes about the contact.
+     *
+     *	@param note the notes to be added
+     */
+    @Override
+    public void addNotes(String note) {
+        this.notes += " " + note; // look at implementing as an ArrayList later
+    }
+
+    /**
      *	Returns our notes about the contact, if any.
      *
      *	If we have not written anything about the contact, the empty
@@ -47,15 +57,5 @@ public class ContactImpl implements Contact {
     @Override
     public String getNotes() {
     	return notes;
-    }
-
-    /**
-     *	Add notes about the contact.
-     *
-     *	@param note the notes to be added
-     */
-    @Override
-    public void addNotes(String note) {
-    	this.notes += " " + note; // look at implementing as an ArrayList later
     }
 }
