@@ -1,3 +1,5 @@
+import org.omg.CORBA.PUBLIC_MEMBER;
+
 import java.util.Calendar;
 import java.util.Set;
 
@@ -6,7 +8,7 @@ import java.util.Set;
  *
  *	Meetings have unique IDs, scheduled date and a list of participating contacts
  */
-public abstract class MeetingImpl implements Meeting {
+public abstract class MeetingImpl implements Meeting, Comparable<Meeting> {
 
     private int id;
     private Set<Contact> contacts;
@@ -59,5 +61,10 @@ public abstract class MeetingImpl implements Meeting {
     @Override
     public Calendar getDate() {
 		return date;
+    }
+
+    @Override
+    public int compareTo(Meeting meeting) {
+        return getDate().compareTo(meeting.getDate());
     }
 }

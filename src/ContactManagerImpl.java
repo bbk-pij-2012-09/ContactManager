@@ -4,7 +4,7 @@ import java.util.*;
  *	A class to manage your contacts and meetings.
  */
 public class ContactManagerImpl implements ContactManager {
-
+    //--------------------------------------------------------------------------------
     private int contactId;
 	private Set<Contact> contacts;
 	private List<Meeting> meetings;
@@ -14,18 +14,7 @@ public class ContactManagerImpl implements ContactManager {
 		contacts = new HashSet<Contact>(); //for now will see if order matters ****************************************
         meetings = new ArrayList<Meeting>();
 	}
-
-
-
-
-
-
-
-
-
-
-
-
+    //--------------------------------------------------------------------------------
     /**
      *	Checks if all contacts exist
      *
@@ -52,17 +41,7 @@ public class ContactManagerImpl implements ContactManager {
         return date.before(currentDate);
     }
 
-
-
-
-
-
-
-
-
-
-
-
+    //1--------------------------------------------------------------------------------
     /**
      *	Create a new contact with the specified name and notes.
      *
@@ -76,13 +55,14 @@ public class ContactManagerImpl implements ContactManager {
             throw new NullPointerException("You tried to add a new contact however the name is missing");
         } else if (notes == null) {
             throw new NullPointerException("You tried to add a new contact however notes are missing");
-        } else {
-            ContactImpl contact = new ContactImpl(++contactId, name, notes);
+        } else {ContactImpl contact = new ContactImpl(++contactId, name, notes);
+
             contacts.add(contact);
         }
     }
 
-    /**
+    //2--------------------------------------------------------------------------------
+     /**
      *	Returns a list containing the contacts that correspond to the IDs.
      *
      *	@param ids an arbitrary number of contact IDs
@@ -130,15 +110,7 @@ public class ContactManagerImpl implements ContactManager {
         return result;
     }
 
-
-
-
-
-
-
-
-
-
+    //3--------------------------------------------------------------------------------
     /**
      *	Add a new meeting to be held in the future.
      *
@@ -161,6 +133,7 @@ public class ContactManagerImpl implements ContactManager {
         }
     }
 
+    //4--------------------------------------------------------------------------------
     /**
      *	Returns the FUTURE meeting with the requested ID, or null if there is none.
      *
@@ -170,7 +143,7 @@ public class ContactManagerImpl implements ContactManager {
      */
     @Override
     public FutureMeeting getFutureMeeting(int id) {
-        for (Meeting meeting: meetings) {
+        for (Meeting meeting : meetings) {
             if (meeting.getId() == id) {
                 if (isInThePast(meeting.getDate())) {
                     throw new IllegalArgumentException("A meeting with that ID happening in the past");
@@ -182,6 +155,7 @@ public class ContactManagerImpl implements ContactManager {
         return null;
     }
 
+    //5--------------------------------------------------------------------------------
     /**
      *	Returns the list of future meetings scheduled with this contact.
      *
@@ -194,18 +168,18 @@ public class ContactManagerImpl implements ContactManager {
      *	@throws IllegalArgumentException if the contact does not exist
      */
     @Override
-    public List<Meeting> getFutureMeetingList(Contact contact) {
-        TreeSet<Meeting> contactMeetings = new TreeSet<Meeting>();
-        for (Contact c : contacts) {
-            if (c == contact) {
-                for (Meeting meeting: meetings) {
-                    if (!isInThePast(meeting.getDate())) {
-                        contactMeetings.add(meeting);
-                    }
+    public List<Meeting> getFutureMeetingList(Contact contact) throws IllegalArgumentException {
+        TreeSet<FutureMeeting> contactMeetings = new TreeSet<FutureMeeting>();
+        if(contacts.contains(contact)) {
+            for (Meeting meeting : meetings) {
+                if ((meeting.getContacts()).contains(contact)) {
+                    contactMeetings.add(getFutureMeeting(meeting.getId()));
                 }
             }
+            return new ArrayList<Meeting>(contactMeetings);
+        } else {
+            throw new IllegalArgumentException("the contact " + contact + "does not exist");
         }
-        return (List<Meeting>)contactMeetings;
     }
 
     /**
@@ -220,19 +194,17 @@ public class ContactManagerImpl implements ContactManager {
      *	@return the list of meetings
      */
     @Override
-    public List<Meeting> getFutureMeetingList(Calendar date) { // ***************RETURNS FUTURE AND PAST MEETINGS ********************
-        return null;//	meetings.get()    null; // TO BE REVISED
+    public List<Meeting> getFutureMeetingList(Calendar date) {
+        TreeSet<FutureMeeting> contactMeetings = new TreeSet<FutureMeeting>();
+        for (Meeting meeting : meetings) {
+            if ((meeting.getDate()).equals(date)) {
+                contactMeetings.add(getFutureMeeting(meeting.getId()));
+            }
+        }
+        return new ArrayList<Meeting>(contactMeetings);
     }
 
-
-
-
-
-
-
-
-
-
+    //6--------------------------------------------------------------------------------
     /**
      *	Returns the meeting with the requested ID, or null if it there is none.
      *
@@ -249,15 +221,7 @@ public class ContactManagerImpl implements ContactManager {
         return null;
     }
 
-
-
-
-
-
-
-
-
-
+    //7--------------------------------------------------------------------------------
     /**
      *	Create a new record for a meeting that took place in the past.
      *
@@ -273,8 +237,7 @@ public class ContactManagerImpl implements ContactManager {
         // TO BE REVISED
     }
 
-
-
+    //8--------------------------------------------------------------------------------
     /**
      *	Returns the PAST meeting with the requested ID, or null if it there is none.
      *
@@ -296,6 +259,7 @@ public class ContactManagerImpl implements ContactManager {
         return null;
     }
 
+    //9--------------------------------------------------------------------------------
     /**
      *	Returns the list of past meetings in which this contact has participated.
      *
@@ -312,15 +276,7 @@ public class ContactManagerImpl implements ContactManager {
     	return null; // TO BE REVISED       	
     }
 
-
-
-
-
-
-
-
-
-
+    //10--------------------------------------------------------------------------------
     /**
      *	Add notes to a meeting.
      *
@@ -339,17 +295,7 @@ public class ContactManagerImpl implements ContactManager {
     public void addMeetingNotes(int id, String text) {
     	// TO BE REVISED       	   	    	
     }
-
-
-
-
-
-
-
-
-
-
-
+    //11--------------------------------------------------------------------------------
     /**
      *	Save all data to disk.
      *
@@ -360,4 +306,5 @@ public class ContactManagerImpl implements ContactManager {
     public void flush() {
     	// TO BE REVISED       	    	
     }
+    //--------------------------------------------------------------------------------
 }
