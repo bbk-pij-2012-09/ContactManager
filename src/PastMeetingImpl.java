@@ -15,14 +15,8 @@ public class PastMeetingImpl extends MeetingImpl implements PastMeeting {
         this.notes = notes;
     }
 
-    public PastMeetingImpl(Set<Contact> contacts, Calendar date, String notes) {
+    public PastMeetingImpl(Set<Contact> contacts, Calendar date) {
         super(contacts, date);
-        this.notes = notes;
-    }
-
-   public PastMeetingImpl(PastMeeting pastMeeting, String notes) {
-        super(pastMeeting.getId(), pastMeeting.getContacts(), pastMeeting.getDate());
-        this.notes = notes;
     }
 
     /**
@@ -37,4 +31,3 @@ public class PastMeetingImpl extends MeetingImpl implements PastMeeting {
     	return notes;
     }
 }
-
