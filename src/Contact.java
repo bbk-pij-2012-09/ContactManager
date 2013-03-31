@@ -1,5 +1,5 @@
 /**
- *	A  contact is a person we  are making  business with or may  do  in the future.
+ *	A contact is a person we are making business with or may do in the future.
  *
  *	Contacts have an ID (unique), a name (probably unique, but maybe
  *	not), and notes that the user may want to save about them.
@@ -34,5 +34,5 @@ public interface Contact {
      *
      *	@param note the notes to be added
      */
-    void  addNotes(String note);
+    void addNotes(String note);
 }

@@ -1,47 +1,37 @@
-import java.util.*;
+import java.io.*;
+import java.util.Calendar;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.TreeSet;
 
 /**
  *	A class to manage your contacts and meetings.
  */
 public class ContactManagerImpl implements ContactManager {
-    //--------------------------------------------------------------------------------
+    private static final String FILENAME = "/users/fitzjackson/Dropbox/Development/CM/contacts.txt";
+
     private int contactId;
 	private Set<Contact> contacts;
 	private List<Meeting> meetings;
 
 	public ContactManagerImpl() {
 		contactId = 0; // id whatever it was last time sort out persistence mechanism
-		contacts = new HashSet<Contact>(); //for now will see if order matters ****************************************
-        meetings = new ArrayList<Meeting>();
-	}
-    //--------------------------------------------------------------------------------
-    /**
-     *	Checks if all contacts exist
-     *
-     *	@param contacts a list of contacts
-     *	@return the true if all contacts currently exist.
-     */
-    private boolean isExistingContacts(Set<Contact> contacts) {
-        for (Contact contact : contacts) {
-            if (!contacts.contains(contact)) {
-                return false;
+
+        // Check if the file and folder exists and can be read
+        if (!new File(FILENAME).exists()) {
+            contacts = new HashSet<>();
+            meetings = new ArrayList<>();
+        } else
+            try (ObjectInputStream oInputStream = new ObjectInputStream(new BufferedInputStream(new FileInputStream(FILENAME)));) {
+                contacts = (Set<Contact>) oInputStream.readObject();
+                meetings = (List<Meeting>) oInputStream.readObject();
+            } catch (IOException | ClassNotFoundException ex) {
+                System.err.println("On read error " + ex);
             }
-        }
-        return true;
-    }
+	}
 
-    /**
-     *	Checks if meeting is in the past
-     *
-     *	@param date the date on which the meeting will take place
-     *	@return the true if all date is in the past.
-     */
-    private boolean isInThePast(Calendar date) {
-        Calendar currentDate = Calendar.getInstance();
-        return date.before(currentDate);
-    }
-
-    //1--------------------------------------------------------------------------------
     /**
      *	Create a new contact with the specified name and notes.
      *
@@ -55,13 +45,12 @@ public class ContactManagerImpl implements ContactManager {
             throw new NullPointerException("You tried to add a new contact however the name is missing");
         } else if (notes == null) {
             throw new NullPointerException("You tried to add a new contact however notes are missing");
-        } else {ContactImpl contact = new ContactImpl(++contactId, name, notes);
-
+        } else {
+            ContactImpl contact = new ContactImpl(++contactId, name, notes);
             contacts.add(contact);
         }
     }
 
-    //2--------------------------------------------------------------------------------
      /**
      *	Returns a list containing the contacts that correspond to the IDs.
      *
@@ -110,7 +99,6 @@ public class ContactManagerImpl implements ContactManager {
         return result;
     }
 
-    //3--------------------------------------------------------------------------------
     /**
      *	Add a new meeting to be held in the future.
      *
@@ -133,7 +121,6 @@ public class ContactManagerImpl implements ContactManager {
         }
     }
 
-    //4--------------------------------------------------------------------------------
     /**
      *	Returns the FUTURE meeting with the requested ID, or null if there is none.
      *
@@ -155,7 +142,6 @@ public class ContactManagerImpl implements ContactManager {
         return null;
     }
 
-    //5--------------------------------------------------------------------------------
     /**
      *	Returns the list of future meetings scheduled with this contact.
      *
@@ -195,16 +181,15 @@ public class ContactManagerImpl implements ContactManager {
      */
     @Override
     public List<Meeting> getFutureMeetingList(Calendar date) {
-        TreeSet<FutureMeeting> contactMeetings = new TreeSet<FutureMeeting>();
+        HashSet<FutureMeeting> contactMeetings = new HashSet<>();
         for (Meeting meeting : meetings) {
-            if ((meeting.getDate()).equals(date)) {
+            if (isSameDate(meeting.getDate(), date)) {
                 contactMeetings.add(getFutureMeeting(meeting.getId()));
             }
         }
         return new ArrayList<Meeting>(contactMeetings);
     }
 
-    //6--------------------------------------------------------------------------------
     /**
      *	Returns the meeting with the requested ID, or null if it there is none.
      *
@@ -221,7 +206,6 @@ public class ContactManagerImpl implements ContactManager {
         return null;
     }
 
-    //7--------------------------------------------------------------------------------
     /**
      *	Create a new record for a meeting that took place in the past.
      *
@@ -233,11 +217,17 @@ public class ContactManagerImpl implements ContactManager {
      *	@throws NullPointerException if any of the arguments is null
      */
     @Override
-    public void addNewPastMeeting(Set<Contact> contacts, Calendar date, String text) {
-        // TO BE REVISED
+    public void addNewPastMeeting(Set<Contact> contacts, Calendar date, String text) throws IllegalArgumentException, NullPointerException {
+        if (!(isExistingContacts(contacts))) {
+            throw new IllegalArgumentException("the contact is unknown / non-existent");
+        } else if (contacts == null || date == null || text == null) {
+            throw new NullPointerException("some of the arguments are null");
+        } else {
+            MeetingImpl meeting = new PastMeetingImpl(contacts, date, text);
+            meetings.add(meeting);
+        }
     }
 
-    //8--------------------------------------------------------------------------------
     /**
      *	Returns the PAST meeting with the requested ID, or null if it there is none.
      *
@@ -259,7 +249,6 @@ public class ContactManagerImpl implements ContactManager {
         return null;
     }
 
-    //9--------------------------------------------------------------------------------
     /**
      *	Returns the list of past meetings in which this contact has participated.
      *
@@ -273,10 +262,19 @@ public class ContactManagerImpl implements ContactManager {
      */
     @Override
     public List<PastMeeting> getPastMeetingList(Contact contact) {
-    	return null; // TO BE REVISED       	
+        TreeSet<PastMeeting> contactMeetings = new TreeSet<PastMeeting>();
+        if(contacts.contains(contact)) {
+            for (Meeting meeting : meetings) {
+                if ((meeting.getContacts()).contains(contact)) {
+                    contactMeetings.add(getPastMeeting(meeting.getId()));
+                }
+            }
+            return new ArrayList<PastMeeting>(contactMeetings);
+        } else {
+            throw new IllegalArgumentException("the contact " + contact + "does not exist");
+        }
     }
 
-    //10--------------------------------------------------------------------------------
     /**
      *	Add notes to a meeting.
      *
@@ -292,10 +290,31 @@ public class ContactManagerImpl implements ContactManager {
      *	@throws NullPointerException if the notes are null
      */
     @Override
-    public void addMeetingNotes(int id, String text) {
-    	// TO BE REVISED       	   	    	
+    public void addMeetingNotes(int id, String text) throws IllegalArgumentException, IllegalStateException, NullPointerException {
+        Meeting meeting = getMeeting(id);
+        if (meeting == null) {
+            throw new IllegalArgumentException("Meeting does not exist");
+        } else {
+            if (text == null) {
+                throw new NullPointerException("notes are null");
+            } else {
+                if (meeting instanceof FutureMeeting) {
+                    if (isInThePast(meeting.getDate())) {
+                        meeting = new PastMeetingImpl(getFutureMeeting(id), text);
+                    } else {
+                        throw new IllegalStateException("meeting is set for a date in the future");
+                    }
+                } else {
+                    meeting = new PastMeetingImpl(getPastMeeting(id), getPastMeeting(id).getNotes() + ", " + text);
+                }
+                if (meetings.contains(meeting)) {
+                    meetings.remove(meeting);
+                    meetings.add(meeting);
+                }
+            }
+        }
     }
-    //11--------------------------------------------------------------------------------
+
     /**
      *	Save all data to disk.
      *
@@ -304,7 +323,50 @@ public class ContactManagerImpl implements ContactManager {
      */
     @Override
     public void flush() {
-    	// TO BE REVISED       	    	
+        try (ObjectOutputStream os = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(FILENAME)));) {
+            os.writeObject(contacts);
+            os.writeObject(meetings);
+        } catch (IOException ex) {
+            System.err.println("error " + ex + " when writing to file: " +FILENAME);
+        }
     }
-    //--------------------------------------------------------------------------------
+
+    /**
+     *	Checks if all contacts exist
+     *
+     *	@param contacts a list of contacts
+     *	@return the true if all contacts currently exist.
+     */
+    private boolean isExistingContacts(Set<Contact> contacts) {
+        for (Contact contact : contacts) {
+            if (!contacts.contains(contact)) {
+                return false;
+            }
+        }
+        return contacts.size() > 0;
+    }
+
+    /**
+     *	Checks if meeting is in the past
+     *
+     *	@param date the date on which the meeting will take place
+     *	@return the true if all date is in the past.
+     */
+    private boolean isInThePast(Calendar date) {
+        Calendar currentDate = Calendar.getInstance();
+        return date.before(currentDate);
+    }
+
+    /**
+     *	Checks if the dates are the same
+     *
+     *	@param date1 the first date to be compared date2
+     *	@param date2 the second to be compared to date1
+     *	@return the true if dates are the same.
+     */
+    private boolean isSameDate(Calendar date1, Calendar date2) {
+        return date1.get(Calendar.YEAR) == date2.get(Calendar.YEAR) &&
+               date1.get(Calendar.MONTH) == date2.get(Calendar.MONTH) &&
+               date1.get(Calendar.DAY_OF_MONTH) == date2.get(Calendar.DAY_OF_MONTH);
+    }
 }
