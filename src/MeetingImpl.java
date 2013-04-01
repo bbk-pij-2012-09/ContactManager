@@ -1,3 +1,7 @@
+import org.omg.CORBA.PUBLIC_MEMBER;
+import sun.util.resources.CalendarData;
+
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Set;
 
@@ -6,7 +10,7 @@ import java.util.Set;
  *
  *	Meetings have unique IDs, scheduled date and a list of participating contacts
  */
-public abstract class MeetingImpl implements Meeting, Comparable<Meeting> {
+public abstract class MeetingImpl implements Meeting, Serializable, Comparable<Meeting> {
 
     private int id;
     private Set<Contact> contacts;
@@ -64,5 +68,14 @@ public abstract class MeetingImpl implements Meeting, Comparable<Meeting> {
     @Override
     public int compareTo(Meeting meeting) {
         return getDate().compareTo(meeting.getDate());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if ((o instanceof Meeting) && ((Meeting)o).getId() == this.getId()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

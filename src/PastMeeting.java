@@ -1,5 +1,5 @@
 /**
- *	A  meeting that was  held in  the past.
+ *	A meeting that was held in the past.
  *
  *	It includes your notes about what happened and what was agreed.
  */
